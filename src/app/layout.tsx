@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Nunito } from 'next/font/google'
-import { Theme } from '@radix-ui/themes'
+import { Code, Container, Flex, Link, Text, Theme } from '@radix-ui/themes'
 import { Header } from '@/components/Header'
 import '@radix-ui/themes/styles.css'
 import './globals.css'
@@ -26,6 +26,18 @@ export default function RootLayout({
         <Theme accentColor="sky" radius="large">
           <Header />
           <main>{children}</main>
+          <footer>
+            <Container px="6" py="4" size="3">
+              <Flex justify="center">
+                <Text>
+                  Enjoy the weather! Made by{' '}
+                  <Code asChild>
+                    <Link href="https://github.com/vamcs">@vamcs</Link>
+                  </Code>
+                </Text>
+              </Flex>
+            </Container>
+          </footer>
         </Theme>
       </body>
     </html>

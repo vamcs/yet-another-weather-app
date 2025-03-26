@@ -10,6 +10,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: var(--accent-a3);
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
