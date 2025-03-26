@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={nunito.variable}>
-        <Theme>
+        <Theme accentColor="sky" radius="large">
           <main>{children}</main>
         </Theme>
       </body>
