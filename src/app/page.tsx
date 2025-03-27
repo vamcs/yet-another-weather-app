@@ -10,12 +10,13 @@ import {
   IconButton,
   Inset,
   Table,
+  Text,
   TextField,
 } from '@radix-ui/themes'
 import Image from 'next/image'
 import { DynamicMap } from '@/components/Map'
 import { getForecast } from '@/services/weather'
-import { formatNumber } from '@/helpers/formatters'
+import { formatNumber, formatTime } from '@/helpers/formatters'
 
 export default async function Home() {
   const coordinates = {
@@ -95,25 +96,41 @@ export default async function Home() {
               </Box>
             </Flex>
           </Card>
-          <Table.Root variant="surface">
+          <Table.Root variant="surface" layout="auto">
             <Table.Header>
               <Table.Row>
-                <Table.ColumnHeaderCell>Time (CET)</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Weather</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Temperature</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Precipitation</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Wind</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell minWidth="120px">
+                  Time (CET)
+                </Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell justify="center">
+                  Weather
+                </Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell justify="center">
+                  Temperature
+                </Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell justify="center">
+                  Precipitation
+                </Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell justify="center">
+                  Wind
+                </Table.ColumnHeaderCell>
               </Table.Row>
             </Table.Header>
             <Table.Body>
               {forecast.timeseries.map((ts) => (
                 <Table.Row key={ts.timeFrom} align="center">
                   <Table.Cell>
-                    {new Date(ts.timeFrom).toLocaleString('sv-SE', {
-                      timeZone: 'Europe/Stockholm',
-                    })}
+                    {!ts.timeTo ? (
+                      formatTime({ time: ts.timeFrom })
+                    ) : (
+                      <Flex direction="column">
+                        {formatTime({ time: ts.timeFrom })}
+                        <Text>to</Text>
+                        {formatTime({ time: ts.timeTo })}
+                      </Flex>
+                    )}
                   </Table.Cell>
-                  <Table.Cell>
+                  <Table.Cell justify="center">
                     <Image
                       src={`/${ts.weatherSymbol}.svg`}
                       alt={ts.weatherSymbol}
@@ -121,19 +138,19 @@ export default async function Home() {
                       height={30}
                     />
                   </Table.Cell>
-                  <Table.Cell>
+                  <Table.Cell justify="center">
                     {formatNumber({
                       value: ts.temperature,
                       unit: 'celsius',
                     })}
                   </Table.Cell>
-                  <Table.Cell>
+                  <Table.Cell justify="center">
                     {formatNumber({
                       value: ts.precipitation,
                       unit: 'millimeter',
                     })}
                   </Table.Cell>
-                  <Table.Cell>
+                  <Table.Cell justify="center">
                     {formatNumber({
                       value: ts.wind,
                       unit: 'meter-per-second',

@@ -28,6 +28,47 @@ export const getCurrentTimeseries = (
   return currentTimeseries
 }
 
+export const getTimeseries = (
+  forecast: Forecast
+): ForecastOutput['timeseries'] => {
+  return forecast.properties.timeseries
+    .filter(
+      (timeseries) =>
+        timeseries.data.next_1_hours ||
+        timeseries.data.next_6_hours ||
+        timeseries.data.next_12_hours
+    )
+    .map<ForecastOutput['timeseries'][number]>((timeseries, index, array) => {
+      const precipitation =
+        timeseries.data.next_1_hours?.details.precipitation_amount ??
+        timeseries.data.next_6_hours?.details.precipitation_amount ??
+        timeseries.data.next_12_hours?.details.precipitation_amount ??
+        0
+
+      const weatherSymbol =
+        timeseries.data.next_1_hours?.summary.symbol_code ??
+        timeseries.data.next_6_hours?.summary.symbol_code ??
+        timeseries.data.next_12_hours?.summary.symbol_code ??
+        ''
+
+      return {
+        temperature: timeseries.data.instant.details.air_temperature,
+        precipitation,
+        wind: timeseries.data.instant.details.wind_speed,
+        timeFrom: timeseries.time,
+        ...(!timeseries.data.next_1_hours
+          ? {
+              timeTo:
+                index + 1 <= array.length - 1
+                  ? array[index + 1].time
+                  : undefined,
+            }
+          : {}),
+        weatherSymbol,
+      }
+    })
+}
+
 export const mapForecast = (forecast: Forecast): ForecastOutput => {
   const currentTimeseries = getCurrentTimeseries(forecast)
 
@@ -49,6 +90,6 @@ export const mapForecast = (forecast: Forecast): ForecastOutput => {
         next_12_hours?.summary.symbol_code ??
         '',
     },
-    timeseries: [], // TODO: Add timeseries
+    timeseries: getTimeseries(forecast),
   }
 }

@@ -67,5 +67,7 @@ describe('mapForecast', () => {
       wind: 4.7,
       weatherSymbol: 'cloudy',
     })
+
+    expect(forecastOutput.timeseries).toMatchSnapshot()
   })
 })

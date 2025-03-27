@@ -10,3 +10,9 @@ export const formatNumber = ({
     unit,
   })
 }
+
+export const formatTime = ({ time }: { time: string }) => {
+  return new Date(time).toLocaleString('sv-SE', {
+    timeZone: 'Europe/Stockholm',
+  })
+}
