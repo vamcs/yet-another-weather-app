@@ -24,7 +24,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={nunito.variable}>
         <Theme accentColor="sky" radius="large">
-          <Flex direction="column" height="100svh">
+          <Flex direction="column" minHeight="100svh">
             <Header />
             <main>{children}</main>
             <footer>
