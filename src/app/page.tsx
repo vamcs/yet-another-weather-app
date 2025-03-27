@@ -9,23 +9,24 @@ import {
   Heading,
   IconButton,
   Inset,
+  Table,
   TextField,
 } from '@radix-ui/themes'
 import Image from 'next/image'
 
 export default async function Home() {
   // TODO: Add weather data
-  // const weather = await fetch(
-  //   'https://api.met.no/weatherapi/nowcast/2.0/complete?lat=59.3327&lon=18.0656',
-  //   {
-  //     headers: {
-  //       'User-Agent':
-  //         'YetAnotherWeatherApp/1.0 github.com/vamcs/yet-another-weather-app',
-  //     },
-  //   }
-  // )
+  const weather = await fetch(
+    'https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=59.3327&lon=18.0656',
+    {
+      headers: {
+        'User-Agent':
+          'YetAnotherWeatherApp/1.0 github.com/vamcs/yet-another-weather-app',
+      },
+    }
+  )
 
-  // const data = await weather.json()
+  const data = await weather.json()
 
   return (
     <div className={styles.main}>
@@ -81,6 +82,68 @@ export default async function Home() {
               </Box>
             </Flex>
           </Card>
+          <Table.Root variant="surface">
+            <Table.Header>
+              <Table.Row>
+                <Table.ColumnHeaderCell>Time (CET)</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Temperature</Table.ColumnHeaderCell>
+                {/* <Table.ColumnHeaderCell>Weather</Table.ColumnHeaderCell> */}
+                <Table.ColumnHeaderCell>Next 1 hour</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Next 6 hours</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Next 12 hours</Table.ColumnHeaderCell>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {data.properties.timeseries.map((ts) => (
+                <Table.Row key={ts.time} align="center">
+                  <Table.Cell>
+                    {new Date(ts.time).toLocaleString('sv-SE', {
+                      timeZone: 'Europe/Stockholm',
+                    })}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {ts.data.instant.details.air_temperature}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {ts.data.next_1_hours?.summary?.symbol_code ? (
+                      <Image
+                        src={`/${ts.data.next_1_hours.summary.symbol_code}.svg`}
+                        alt={ts.data.next_1_hours.summary.symbol_code}
+                        width={30}
+                        height={30}
+                      />
+                    ) : (
+                      '-'
+                    )}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {ts.data.next_6_hours?.summary?.symbol_code ? (
+                      <Image
+                        src={`/${ts.data.next_6_hours.summary.symbol_code}.svg`}
+                        alt={ts.data.next_6_hours.summary.symbol_code}
+                        width={30}
+                        height={30}
+                      />
+                    ) : (
+                      '-'
+                    )}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {ts.data.next_12_hours?.summary?.symbol_code ? (
+                      <Image
+                        src={`/${ts.data.next_12_hours.summary.symbol_code}.svg`}
+                        alt={ts.data.next_12_hours.summary.symbol_code}
+                        width={30}
+                        height={30}
+                      />
+                    ) : (
+                      '-'
+                    )}
+                  </Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table.Root>
         </Flex>
       </Container>
     </div>
