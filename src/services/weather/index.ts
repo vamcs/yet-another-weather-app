@@ -1,3 +1,4 @@
+import { userAgent } from '../constants'
 import { mapForecast } from './helpers'
 import { Forecast, ForecastOutput } from './types'
 
@@ -13,8 +14,7 @@ export const getForecast = async ({
       `https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lng}`,
       {
         headers: {
-          'User-Agent':
-            'YetAnotherWeatherApp/1.0 github.com/vamcs/yet-another-weather-app',
+          'User-Agent': userAgent,
         },
       }
     )
