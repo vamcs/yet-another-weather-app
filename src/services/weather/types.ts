@@ -31,7 +31,7 @@ type ForecastTimePeriod = Partial<{
 
 type ForecastSummary = {
   symbol_code: string
-  symbol_code_confidence?: number
+  symbol_confidence?: string
 }
 
 export type Forecast = {
@@ -41,11 +41,11 @@ export type Forecast = {
     /** [longitude, latitude, altitude] */
     coordinates: [number, number, number]
   }
-  meta: {
-    updated_at: string
-    units: Record<string, string>
-  }
   properties: {
+    meta: {
+      updated_at: string
+      units: Record<string, string>
+    }
     timeseries: Array<{
       time: string
       data: {
