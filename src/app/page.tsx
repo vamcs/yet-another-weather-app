@@ -14,20 +14,19 @@ import {
 } from '@radix-ui/themes'
 import Image from 'next/image'
 import { DynamicMap } from '@/components/Map'
+import { getForecast } from '@/services/weather'
+import { formatNumber } from '@/helpers/formatters'
 
 export default async function Home() {
-  // TODO: Add weather data
-  const weather = await fetch(
-    'https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=59.3327&lon=18.0656',
-    {
-      headers: {
-        'User-Agent':
-          'YetAnotherWeatherApp/1.0 github.com/vamcs/yet-another-weather-app',
-      },
-    }
-  )
+  const coordinates = {
+    lat: 59.3327,
+    lng: 18.0656,
+  }
 
-  const data = await weather.json()
+  const forecast = await getForecast({
+    lat: coordinates.lat,
+    lng: coordinates.lng,
+  })
 
   return (
     <div className={styles.main}>
@@ -53,8 +52,8 @@ export default async function Home() {
                 <Flex direction="row" gap="2" mb="3">
                   <Heading as="h2">Stockholm</Heading>
                   <Image
-                    src="/clearsky_day.svg"
-                    alt="Clear sky"
+                    src={`/${forecast.weatherSymbol}.svg`}
+                    alt={forecast.weatherSymbol}
                     width={30}
                     height={30}
                   />
@@ -62,24 +61,36 @@ export default async function Home() {
                 <DataList.Root orientation="horizontal">
                   <DataList.Item>
                     <DataList.Label>Temperature now</DataList.Label>
-                    <DataList.Value>7°C</DataList.Value>
+                    <DataList.Value>
+                      {formatNumber({
+                        value: forecast.temperature,
+                        unit: 'celsius',
+                      })}
+                    </DataList.Value>
                   </DataList.Item>
                   <DataList.Item>
                     <DataList.Label>Precipitation</DataList.Label>
-                    <DataList.Value>0 mm</DataList.Value>
+                    <DataList.Value>
+                      {formatNumber({
+                        value: forecast.precipitation,
+                        unit: 'millimeter',
+                      })}
+                    </DataList.Value>
                   </DataList.Item>
                   <DataList.Item>
                     <DataList.Label>Wind</DataList.Label>
-                    <DataList.Value>5.1 m/s</DataList.Value>
+                    <DataList.Value>
+                      {formatNumber({
+                        value: forecast.wind,
+                        unit: 'meter-per-second',
+                      })}
+                    </DataList.Value>
                   </DataList.Item>
                 </DataList.Root>
               </Box>
               <Box width={{ initial: '100%', sm: '50%' }}>
                 <Inset side={{ initial: 'bottom', sm: 'right' }}>
-                  <DynamicMap
-                    lat={data.geometry.coordinates[1]}
-                    lng={data.geometry.coordinates[0]}
-                  />
+                  <DynamicMap lat={coordinates.lat} lng={coordinates.lng} />
                 </Inset>
               </Box>
             </Flex>
@@ -88,59 +99,45 @@ export default async function Home() {
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeaderCell>Time (CET)</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Weather</Table.ColumnHeaderCell>
                 <Table.ColumnHeaderCell>Temperature</Table.ColumnHeaderCell>
-                {/* <Table.ColumnHeaderCell>Weather</Table.ColumnHeaderCell> */}
-                <Table.ColumnHeaderCell>Next 1 hour</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Next 6 hours</Table.ColumnHeaderCell>
-                <Table.ColumnHeaderCell>Next 12 hours</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Precipitation</Table.ColumnHeaderCell>
+                <Table.ColumnHeaderCell>Wind</Table.ColumnHeaderCell>
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {data.properties.timeseries.map((ts) => (
-                <Table.Row key={ts.time} align="center">
+              {forecast.timeseries.map((ts) => (
+                <Table.Row key={ts.timeFrom} align="center">
                   <Table.Cell>
-                    {new Date(ts.time).toLocaleString('sv-SE', {
+                    {new Date(ts.timeFrom).toLocaleString('sv-SE', {
                       timeZone: 'Europe/Stockholm',
                     })}
                   </Table.Cell>
                   <Table.Cell>
-                    {ts.data.instant.details.air_temperature}
+                    <Image
+                      src={`/${ts.weatherSymbol}.svg`}
+                      alt={ts.weatherSymbol}
+                      width={30}
+                      height={30}
+                    />
                   </Table.Cell>
                   <Table.Cell>
-                    {ts.data.next_1_hours?.summary?.symbol_code ? (
-                      <Image
-                        src={`/${ts.data.next_1_hours.summary.symbol_code}.svg`}
-                        alt={ts.data.next_1_hours.summary.symbol_code}
-                        width={30}
-                        height={30}
-                      />
-                    ) : (
-                      '-'
-                    )}
+                    {formatNumber({
+                      value: ts.temperature,
+                      unit: 'celsius',
+                    })}
                   </Table.Cell>
                   <Table.Cell>
-                    {ts.data.next_6_hours?.summary?.symbol_code ? (
-                      <Image
-                        src={`/${ts.data.next_6_hours.summary.symbol_code}.svg`}
-                        alt={ts.data.next_6_hours.summary.symbol_code}
-                        width={30}
-                        height={30}
-                      />
-                    ) : (
-                      '-'
-                    )}
+                    {formatNumber({
+                      value: ts.precipitation,
+                      unit: 'millimeter',
+                    })}
                   </Table.Cell>
                   <Table.Cell>
-                    {ts.data.next_12_hours?.summary?.symbol_code ? (
-                      <Image
-                        src={`/${ts.data.next_12_hours.summary.symbol_code}.svg`}
-                        alt={ts.data.next_12_hours.summary.symbol_code}
-                        width={30}
-                        height={30}
-                      />
-                    ) : (
-                      '-'
-                    )}
+                    {formatNumber({
+                      value: ts.wind,
+                      unit: 'meter-per-second',
+                    })}
                   </Table.Cell>
                 </Table.Row>
               ))}
