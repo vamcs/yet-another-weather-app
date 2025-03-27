@@ -13,6 +13,7 @@ import {
   TextField,
 } from '@radix-ui/themes'
 import Image from 'next/image'
+import { DynamicMap } from '@/components/Map'
 
 export default async function Home() {
   // TODO: Add weather data
@@ -75,9 +76,10 @@ export default async function Home() {
               </Box>
               <Box width={{ initial: '100%', sm: '50%' }}>
                 <Inset side={{ initial: 'bottom', sm: 'right' }}>
-                  <Box height="156px" className={styles.map}>
-                    Map here
-                  </Box>
+                  <DynamicMap
+                    lat={data.geometry.coordinates[1]}
+                    lng={data.geometry.coordinates[0]}
+                  />
                 </Inset>
               </Box>
             </Flex>
