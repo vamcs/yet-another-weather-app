@@ -73,10 +73,12 @@ export type Forecast = {
 }
 
 export type ForecastOutput = {
-  temperature: number
-  precipitation: number
-  wind: number
-  weatherSymbol: string
+  current: {
+    temperature: number
+    precipitation: number
+    wind: number
+    weatherSymbol: string
+  }
   timeseries: Array<{
     timeFrom: string
     timeTo?: string

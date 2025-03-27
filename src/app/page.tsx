@@ -52,8 +52,8 @@ export default async function Home() {
                 <Flex direction="row" gap="2" mb="3">
                   <Heading as="h2">Stockholm</Heading>
                   <Image
-                    src={`/${forecast.weatherSymbol}.svg`}
-                    alt={forecast.weatherSymbol}
+                    src={`/${forecast.current.weatherSymbol}.svg`}
+                    alt={forecast.current.weatherSymbol}
                     width={30}
                     height={30}
                   />
@@ -63,7 +63,7 @@ export default async function Home() {
                     <DataList.Label>Temperature now</DataList.Label>
                     <DataList.Value>
                       {formatNumber({
-                        value: forecast.temperature,
+                        value: forecast.current.temperature,
                         unit: 'celsius',
                       })}
                     </DataList.Value>
@@ -72,7 +72,7 @@ export default async function Home() {
                     <DataList.Label>Precipitation</DataList.Label>
                     <DataList.Value>
                       {formatNumber({
-                        value: forecast.precipitation,
+                        value: forecast.current.precipitation,
                         unit: 'millimeter',
                       })}
                     </DataList.Value>
@@ -81,7 +81,7 @@ export default async function Home() {
                     <DataList.Label>Wind</DataList.Label>
                     <DataList.Value>
                       {formatNumber({
-                        value: forecast.wind,
+                        value: forecast.current.wind,
                         unit: 'meter-per-second',
                       })}
                     </DataList.Value>
